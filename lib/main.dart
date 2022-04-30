@@ -1,13 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_plain/weather_widjet.dart';
 import 'package:http/http.dart' as http;
 import 'constants.dart';
 import 'model/forecast_response.dart';
 import 'package:geolocator/geolocator.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
@@ -76,7 +78,7 @@ class _WeatherForcastPageState extends State<WeatherForcastPage> {
 
     var queryParameters = {
       // подготавливаем параметры запроса
-      'APPID': Constants.weatherAppId,
+      'APPID': dotenv.env['OPENWEATHER_APIKEY'],
       'units': 'metric',
       'lat': lat.toString(),
       'lon': lng.toString(),
@@ -103,7 +105,7 @@ class _WeatherForcastPageState extends State<WeatherForcastPage> {
     return <ListItem>[];
   }
 
-  _refreshWheather(Position location) {
+  _refreshWeather(Position location) {
     setState(() {
       _weatherForecast.clear();
       _loading = true;   
@@ -137,14 +139,14 @@ class _WeatherForcastPageState extends State<WeatherForcastPage> {
     });
   }
 
-  Future<void> _loadWheather() async {
-    _determinePosition().then((location) => _refreshWheather(location)); 
+  Future<void> _loadWeather() async {
+    _determinePosition().then((location) => _refreshWeather(location)); 
   }
 
   @override
   void initState() {
     super.initState();
-  _loadWheather();
+  _loadWeather();
   }  
 
   @override
@@ -155,12 +157,12 @@ class _WeatherForcastPageState extends State<WeatherForcastPage> {
         actions: [
             IconButton(
               icon: const Icon(Icons.refresh),
-              onPressed: _loadWheather,
+              onPressed: _loadWeather,
             ),
           ],
       ),
       body: _loading ? const Center(child: CircularProgressIndicator()) : RefreshIndicator(
-        onRefresh: _loadWheather,
+        onRefresh: _loadWeather,
         child: ListView.builder(
                   itemCount: _weatherForecast.length,
                   itemBuilder: (BuildContext context, int index) {

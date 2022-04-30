@@ -33,21 +33,6 @@ class WeatherListItem extends StatelessWidget implements ListItemWidget {
   }
 }
 
-// class Weather extends ListItem {
-//   static const String weatherURL = "http://openweathermap.org/img/w/";
-
-//   DateTime dateTime;
-//   num degree;
-//   int clouds;
-//   String iconURL;
-
-//   String getIconUrl() {
-//     return weatherURL + iconURL + ".png";
-//   }
-
-//   Weather(this.dateTime, this.degree, this.clouds, this.iconURL);
-// }
-
 class DayHeading extends ListItem {
   final DateTime dateTime;
 
