@@ -37,6 +37,10 @@ dependencies:
 
   intl: 0.17.0
 
+  http: 0.13.4
+
+  geolocator: 8.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
