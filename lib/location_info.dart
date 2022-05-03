@@ -4,9 +4,9 @@ import 'package:geolocator/geolocator.dart';
 
 class LocationInfo extends InheritedWidget{
 
-  Position? location;
+  final Position location;
 
-  LocationInfo(this.location, {Key? key, required Widget child}) : super(key: key, child: child);
+  const LocationInfo({Key? key, required this.location,  required Widget child}) : super(key: key, child: child);
 
   static LocationInfo of(BuildContext context) => 
     context.dependOnInheritedWidgetOfExactType<LocationInfo>()!;
@@ -14,9 +14,9 @@ class LocationInfo extends InheritedWidget{
   @override
   bool updateShouldNotify(LocationInfo oldWidget) {
 
-    var oldLocationTime = oldWidget.location?.timestamp?.millisecondsSinceEpoch ?? 0;
+    var oldLocationTime = oldWidget.location.timestamp?.millisecondsSinceEpoch ?? 0;
 
-    var newLocationTime = location?.timestamp?.millisecondsSinceEpoch ?? 0;
+    var newLocationTime = location.timestamp?.millisecondsSinceEpoch ?? 0;
 
     if (oldLocationTime == 0 && newLocationTime == 0) {
       // для случая первой загрузки
@@ -80,6 +80,29 @@ class _LocationInheritedWidgetState extends State<LocationInheritedWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return  LocationInfo(_location, child: widget.child);
+    return 
+      _location == null ? const _StartPage() :  LocationInfo(location: _location!, child: widget.child);
+  }
+}
+
+class _StartPage extends StatelessWidget {
+  const _StartPage({ Key? key }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Align(alignment: Alignment.centerLeft, child: Text('Weather forecast')),
+        actions: [
+            IconButton(
+              icon: const Icon(Icons.gps_not_fixed_outlined), onPressed: () {},
+            ),
+          ],
+      ),
+      body: const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text('Location initialization'),
+      )     
+    );
   }
 }

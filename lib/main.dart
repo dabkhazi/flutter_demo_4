@@ -125,11 +125,7 @@ class _WeatherForcastPageState extends State<WeatherForcastPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _loading = true;
-    _location = LocationInfo.of(context).location;
-    if (_location != null) {
-      _refreshWeather(_location!);
-    }
+    _refreshWeather(LocationInfo.of(context).location);
   }
 
   @override
