@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_plain/location_info.dart';
 import 'package:flutter_plain/weather_widjet.dart';
 import 'package:http/http.dart' as http;
 import 'constants.dart';
@@ -25,7 +26,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SafeArea(child: WeatherForcastPage(cityName: 'Moscow',)),
+      home: const SafeArea(child: 
+        LocationInheritedWidget(child : WeatherForcastPage(cityName: 'Moscow',))),
     );
   }
 }
@@ -49,30 +51,7 @@ class _WeatherForcastPageState extends State<WeatherForcastPage> {
 
   var _loading = false;
 
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-    
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.');
-    } 
-
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-  }
+  Position? _location;
 
   Future<List<ListItem>?> _getWeather(double lat, double lng) async {
 
@@ -140,14 +119,18 @@ class _WeatherForcastPageState extends State<WeatherForcastPage> {
   }
 
   Future<void> _loadWeather() async {
-    _determinePosition().then((location) => _refreshWeather(location)); 
+    _refreshWeather(_location!); 
   }
 
   @override
-  void initState() {
-    super.initState();
-  _loadWeather();
-  }  
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loading = true;
+    _location = LocationInfo.of(context).location;
+    if (_location != null) {
+      _refreshWeather(_location!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
