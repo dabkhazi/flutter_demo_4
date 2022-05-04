@@ -51,8 +51,6 @@ class _WeatherForcastPageState extends State<WeatherForcastPage> {
 
   var _loading = false;
 
-  Position? _location;
-
   Future<List<ListItem>?> _getWeather(double lat, double lng) async {
 
     var queryParameters = {
@@ -84,7 +82,8 @@ class _WeatherForcastPageState extends State<WeatherForcastPage> {
     return <ListItem>[];
   }
 
-  _refreshWeather(Position location) {
+  _refreshWeather() {
+    Position location = LocationInfo.of(context).location;
     setState(() {
       _weatherForecast.clear();
       _loading = true;   
@@ -119,13 +118,13 @@ class _WeatherForcastPageState extends State<WeatherForcastPage> {
   }
 
   Future<void> _loadWeather() async {
-    _refreshWeather(_location!); 
+    _refreshWeather(); 
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _refreshWeather(LocationInfo.of(context).location);
+    _refreshWeather();
   }
 
   @override
